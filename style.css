@@ -65,6 +65,7 @@
    font-family: 'Georgia', serif;
    letter-spacing: 1px;
    cursor: pointer;
+  margin-left: 100px;
  }
 
  .search-box {
