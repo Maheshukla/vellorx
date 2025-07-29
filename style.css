@@ -349,76 +349,74 @@
  }
 
  .pick-section {
-   text-align: center;
-   padding: 40px 20px;
- }
+  padding: 40px 20px;
+  background: #f9f9f9;
+  text-align: center;
+}
 
- .pick-title {
-   font-size: 28px;
-   margin-bottom: 30px;
-   font-weight: 600;
- }
+.pick-heading {
+  font-size: 24px;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
 
- .pick-container {
-   display: flex;
-   justify-content: center;
-   gap: 30px;
-   flex-wrap: wrap;
- }
+/* Pick Container */
+.pick-container {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding: 10px 0;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE */
+}
+.pick-container::-webkit-scrollbar {
+  display: none; /* Chrome */
+}
 
- .pick-item {
-   display: flex;
-   flex-direction: column;
-   align-items: center;
- }
+.pick-item {
+  flex: 0 0 auto;
+  width: 100px;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
 
- .pick-item img {
-   width: 120px;
-   height: 120px;
-   border-radius: 50%;
-   object-fit: cover;
-   border: 3px solid #ccc;
-   transition: transform 0.3s ease;
- }
+.pick-item img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
 
- .pick-item img:hover {
-   transform: scale(1.05);
- }
+.pick-item p {
+  margin-top: 8px;
+  font-size: 14px;
+}
 
- .pick-item span {
-   margin-top: 10px;
-   font-size: 16px;
-   font-weight: 500;
- }
+/* Hover effect */
+.pick-item:hover img {
+  transform: scale(1.1);
+  border-color: #007bff;
+}
 
- @media (max-width: 768px) {
-   .pick-section {
-     padding: 0 10px;
-     margin-top: 10px;
-   }
+/* Desktop layout */
+@media screen and (min-width: 768px) {
+  .pick-container {
+    justify-content: center;
+    overflow-x: hidden;
+    flex-wrap: nowrap;
+  }
 
-   .pick-scroll {
-     flex-wrap: nowrap;
-     overflow-x: auto;
-     -webkit-overflow-scrolling: touch;
-     scrollbar-width: none;
-   }
+  .pick-item {
+    width: 120px;
+  }
 
-   .pick-scroll::-webkit-scrollbar {
-     display: none;
-   }
-
-   .pick-item {
-     flex: 0 0 auto;
-     width: 80px;
-     margin-right: 15px;
-   }
-
-   /* OPTIONAL: Hide old middle section if it’s duplicated elsewhere */
-   .middle-pick-section {
-     display: none;
-   }
- }
+  .pick-item img {
+    width: 120px;
+    height: 120px;
+  }
+}
 
  body {
    margin: 0;
