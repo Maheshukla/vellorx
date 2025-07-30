@@ -1,48 +1,158 @@
 document.addEventListener('DOMContentLoaded', () => {
+  // Common elements
   const dropdowns = document.querySelectorAll('.dropdown');
-  const menuToggle = document.getElementById('mobileMenuToggle');
-  const navMenu = document.getElementById('navMenu');
-  const logoToggle = document.getElementById('logoToggle');
   const body = document.body;
-  const navbar = document.getElementById('navbar');
 
-  // Hover dropdown
-  dropdowns.forEach(drop => {
-    const content = drop.querySelector('.dropdown-content');
+  // Mobile-specific elements
+  const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+  const navMenu = document.getElementById('navMenu'); // The side-out menu container
+  const logoMobileToggle = document.getElementById('logoMobileToggle'); // Mobile logo for dark mode toggle
 
-    drop.addEventListener('mouseenter', () => {
-      content.classList.add('show-effect');
+  // Desktop-specific elements
+  const logoDesktopToggle = document.getElementById('logoToggle'); // Desktop logo for dark mode toggle
+
+
+  // --- Helper to close all mobile dropdowns ---
+  function closeAllMobileDropdowns() {
+    dropdowns.forEach(drop => {
+      drop.querySelector('.dropdown-content').classList.remove('show-effect');
     });
+  }
 
-    drop.addEventListener('mouseleave', () => {
-      content.classList.remove('show-effect');
+  // --- Setup for Desktop (Hover-based Dropdowns) ---
+  function setupDesktopDropdowns() {
+    dropdowns.forEach(drop => {
+      const content = drop.querySelector('.dropdown-content');
+      const anchor = drop.querySelector('a');
+
+      // Ensure no mobile click listeners are active on desktop
+      anchor.removeEventListener('click', toggleDropdownMobile);
+
+      drop.addEventListener('mouseenter', () => {
+        if (window.innerWidth >= 769) {
+          content.classList.add('show-effect');
+        }
+      });
+
+      drop.addEventListener('mouseleave', () => {
+        if (window.innerWidth >= 769) {
+          content.classList.remove('show-effect');
+        }
+      });
     });
-  });
+  }
 
-  // Mobile menu toggle
-  menuToggle.addEventListener('click', () => {
-    navMenu.classList.toggle('active');
-  });
+  // --- Toggle Dropdown on click for Mobile ---
+  function toggleDropdownMobile(event) {
+    // Only apply if on mobile view
+    if (window.innerWidth < 769) {
+      const drop = this.closest('.dropdown');
+      const content = drop.querySelector('.dropdown-content');
 
-  // Logo click for dark mode toggle
-  logoToggle.addEventListener('click', () => {
-    body.classList.toggle('dark');
-  });
-});
-const dropdowns = document.querySelectorAll('.dropdown-menu');
+      if (content) { // Ensure content exists before toggling
+        event.preventDefault(); // Stop link from navigating
 
-dropdowns.forEach(menu => {
-  menu.addEventListener('mouseenter', () => {
-    const rect = menu.getBoundingClientRect();
-    if (rect.right > window.innerWidth) {
-      menu.style.left = 'auto';
-      menu.style.right = '0';
+        // Close other open mobile dropdowns
+        dropdowns.forEach(otherDrop => {
+          if (otherDrop !== drop) {
+            otherDrop.querySelector('.dropdown-content').classList.remove('show-effect');
+          }
+        });
+
+        // Toggle current dropdown
+        content.classList.toggle('show-effect');
+      }
     }
-  });
+  }
+
+  // --- Setup for Mobile (Click-based Menu and Dropdowns) ---
+  function setupMobileMenu() {
+    // Mobile menu toggle (☰)
+    if (mobileMenuToggle) {
+        mobileMenuToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+            body.classList.toggle('menu-open'); // Add class to body for overlay/no-scroll
+            closeAllMobileDropdowns(); // Close any open sub-menus when main menu opens/closes
+        });
+    }
+
+    // Close menu when clicking outside (overlay)
+    document.addEventListener('click', (event) => {
+      if (body.classList.contains('menu-open') &&
+          !navMenu.contains(event.target) &&
+          !mobileMenuToggle.contains(event.target)) {
+        navMenu.classList.remove('active');
+        body.classList.remove('menu-open');
+        closeAllMobileDropdowns(); // Close all dropdowns
+      }
+    });
+
+    // Add click listeners to main menu items for toggling dropdowns on mobile
+    dropdowns.forEach(drop => {
+      const anchor = drop.querySelector('a');
+      // Remove desktop hover listeners if any were added by mistake
+      drop.removeEventListener('mouseenter', setupDesktopDropdowns); // More robust removal if it was setup
+      drop.removeEventListener('mouseleave', setupDesktopDropdowns); // More robust removal if it was setup
+
+      anchor.addEventListener('click', toggleDropdownMobile);
+    });
+  }
+
+  // --- Dark Mode Toggle Logic ---
+  // Using a single function for dark mode toggle, assigned to the correct logo based on view
+  function setupDarkModeToggle() {
+    if (window.innerWidth >= 769) { // Desktop
+      if (logoDesktopToggle) {
+        logoDesktopToggle.addEventListener('click', () => {
+          body.classList.toggle('dark');
+        });
+      }
+      if (logoMobileToggle) { // Ensure mobile logo listener is off on desktop
+        logoMobileToggle.removeEventListener('click', () => { body.classList.toggle('dark'); });
+      }
+    } else { // Mobile
+      if (logoMobileToggle) {
+        logoMobileToggle.addEventListener('click', () => {
+          body.classList.toggle('dark');
+        });
+      }
+      if (logoDesktopToggle) { // Ensure desktop logo listener is off on mobile
+        logoDesktopToggle.removeEventListener('click', () => { body.classList.toggle('dark'); });
+      }
+    }
+  }
+
+
+  // --- Apply Responsive Logic on Load and Resize ---
+  function applyResponsiveLogic() {
+    // Clean up previous event listeners to prevent duplicates/conflicts
+    dropdowns.forEach(drop => {
+      const anchor = drop.querySelector('a');
+      anchor.removeEventListener('click', toggleDropdownMobile); // Remove mobile click
+      drop.removeEventListener('mouseenter', setupDesktopDropdowns); // Remove desktop hover
+      drop.removeEventListener('mouseleave', setupDesktopDropdowns); // Remove desktop hover
+    });
+    // Remove previous dark mode listeners
+    if (logoDesktopToggle) logoDesktopToggle.removeEventListener('click', () => { body.classList.toggle('dark'); });
+    if (logoMobileToggle) logoMobileToggle.removeEventListener('click', () => { body.classList.toggle('dark'); });
+
+
+    if (window.innerWidth >= 769) { // Desktop View
+      setupDesktopDropdowns();
+      // Ensure mobile menu is hidden and body class removed
+      navMenu.classList.remove('active');
+      body.classList.remove('menu-open');
+      closeAllMobileDropdowns(); // Close any open mobile dropdowns
+    } else { // Mobile View
+      setupMobileMenu();
+    }
+    setupDarkModeToggle(); // Re-apply dark mode toggle listener based on current view
+  }
+
+  applyResponsiveLogic(); // Initial call when DOM is ready
+  window.addEventListener('resize', applyResponsiveLogic); // Recalculate on window resize
 });
-document.getElementById("mobileMenuToggle").addEventListener("click", () => {
-  document.getElementById("navMenu").classList.toggle("active");
-});
+
 const slides = document.querySelectorAll(".slide");
 const dotsContainer = document.querySelector(".dots");
 const prev = document.querySelector(".prev");
