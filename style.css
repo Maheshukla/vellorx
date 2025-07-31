@@ -813,6 +813,9 @@ body.dark {
 .pick-item p {
   margin-top: 8px;
   font-size: 14px;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Hover effect */
@@ -827,9 +830,6 @@ body.dark {
     justify-content: center;
     overflow-x: hidden;
     flex-wrap: nowrap;
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
   .pick-item {
