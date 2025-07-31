@@ -662,9 +662,7 @@ body.dark {
     position: relative;
   }
 
-  .slide h2,
-  .slide p,
-  .slide button {
+  .slide h2, p, button {
     z-index: 2;
     /* to appear over the image */
     color: white;
