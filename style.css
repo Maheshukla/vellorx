@@ -835,7 +835,11 @@ body.dark {
   .pick-item {
     width: 120px;
   }
-
+.pick-item p {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
   .pick-item img {
     width: 120px;
     height: 120px;
